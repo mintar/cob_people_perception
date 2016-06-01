@@ -1,21 +1,25 @@
 <launch>
+  <!-- Name here should NOT be globally qualified (node names cannot contain /) -->
+  <arg name="name" default="mymanager" />
+  <arg name="debug" default="false" />
 
- <include file="$(find openni2_launch)/launch/openni2.launch" />
- 
+  <include file="$(find rgbd_launch)/launch/includes/manager.launch.xml">
+    <arg name="name" value="$(arg name)" />
+    <arg name="num_worker_threads" value="1" />
+    <arg name="debug" value="$(arg debug)" />
+  </include>
 
+  <arg name="tracker_name" default="cob_body_tracker" />
+  <arg name="camera_name" default="camera" />
 
-<arg name="tracker_name" default="cob_body_tracker" />
-<arg name="camera_name" default="camera" />
+  <node pkg="nodelet" type="nodelet" name="body_tracker" 
+    args="load cob_openni2_tracker/body_tracker_nodelet $(arg name)" output="screen" cwd="ROS_HOME">
 
- <node pkg="nodelet" type="nodelet" name="body_tracker" 
- 		args="load cob_openni2_tracker/body_tracker_nodelet /camera/camera_nodelet_manager" output="screen" cwd="ROS_HOME">
- 	 
-	<param name="camera_frame_id" type="str" value="$(arg camera_name)_link" /> <!-- $(arg camera_name)_depth_optical_frame -->
-	<param name="tf_prefix" value="$(arg tracker_name)" />
-	<param name="relative_frame" value="$(arg camera_name)_depth_optical_frame" />
-	
-	<rosparam file="$(find cob_openni2_tracker)/launch/body_tracker_params.yaml"/>
-	
- </node>  
- 
+    <param name="camera_frame_id" type="str" value="$(arg camera_name)_link" /> <!-- $(arg camera_name)_depth_optical_frame -->
+    <param name="tf_prefix" value="$(arg tracker_name)" />
+    <param name="relative_frame" value="$(arg camera_name)_depth_optical_frame" />
+
+    <rosparam file="$(find cob_openni2_tracker)/launch/body_tracker_params.yaml"/>
+
+  </node>  
 </launch>
